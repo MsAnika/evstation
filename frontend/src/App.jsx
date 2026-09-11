@@ -6,6 +6,7 @@ import './App.css'
 import './reference-theme.css'
 import './dashboard-reference.css'
 import Discovery from './Discovery'
+import RequestedChargingFlow from './RequestedChargingFlow'
 
 const API = 'http://localhost:8000'
 const fallbackHosts = [
@@ -22,7 +23,7 @@ const emptyMetrics = { delivered: 0, voltage: 0, tariff: 0, total: 0, savings: 0
 
 function App() {
   void Dashboard
-  const [page, setPage] = useState('dashboard')
+  const [page, setPage] = useState('mobile')
   const [hosts, setHosts] = useState(fallbackHosts)
   const [matches, setMatches] = useState([])
   const [selectedId, setSelectedId] = useState(null)
@@ -35,6 +36,8 @@ function App() {
 
   useEffect(() => { fetch(`${API}/api/hosts`).then((response) => response.json()).then(setHosts).catch(() => {}) }, [])
   useEffect(() => { if (consoleRef.current) consoleRef.current.scrollTop = consoleRef.current.scrollHeight }, [events])
+
+  if (page === 'mobile') return <RequestedChargingFlow />
 
   const selectedHost = hosts.find((host) => host.id === selectedId)
 
