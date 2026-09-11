@@ -1,0 +1,34 @@
+/* Exact Explore dashboard treatment from the supplied mobile reference. */
+body { background: #e9e8f1; }
+.app-shell { min-height: 100svh; padding-bottom: 84px; background: #f9f8ff; }
+.topbar { min-height: 115px; padding: 17px 29px 15px; border-bottom-color: #abc9bd; }
+.brand-mark { width: 58px; height: 58px; flex-basis: 58px; font-size: 30px; }
+.topbar .eyebrow { display: none; }
+.topbar h1 { max-width: 250px; color: #087650; font-size: 39px; line-height: .96; letter-spacing: -1.7px; }
+.topbar h1 span { display: none; }
+.system-state { padding: 10px 13px; border-color: #adbfaf; font-size: 16px; }
+.system-state i { width: 9px; height: 9px; }
+.main-nav { padding: 11px 21px 13px; }
+.main-nav button { min-height: 58px; font-size: 15px; }
+.main-nav button span { font-size: 24px; }
+.explore-search { margin: 29px 29px 16px; padding: 14px 16px; border-color: #c9d9e7; border-radius: 17px; }
+.explore-search span { font-size: 18px; }
+.explore-search b { width: 37px; height: 37px; }
+.filter-row { gap: 12px; padding: 9px 29px 16px; }
+.filter-row button { padding: 11px 18px; font-size: 16px; }
+.explore-map, .explore-map .real-map { height: 675px; }
+.explore-map { border-top: 1px solid #e4e8ef; }
+.explore-map .leaflet-control-attribution, .explore-map .leaflet-control-zoom { display: none; }
+.explore-map .leaflet-tile { filter: saturate(.46) brightness(1.2) contrast(.88); }
+.hub-sheet { margin: -25px 23px 0; padding: 22px 29px 20px; border-radius: 27px; }
+.hub-top { font-size: 16px; }
+.hub-pill { padding: 8px 12px; }
+.hub-top b { font-size: 15px; }
+.hub-sheet h2 { margin: 18px 0 8px; font-size: 28px; letter-spacing: -.8px; }
+.hub-sheet > p { font-size: 16px; }
+.hub-stats { margin-top: 24px; padding: 14px 0; }
+.hub-stats small { font-size: 12px; }
+.hub-stats strong { font-size: 16px; }
+.hub-sheet .primary-action { margin-top: 19px; padding: 18px; font-size: 18px; }
+.dashboard-grid { display: none; }
+@media (max-width: 390px) { .topbar { padding-inline: 20px; }.brand-mark { width: 48px; height: 48px; flex-basis: 48px; }.topbar h1 { font-size: 31px; }.system-state { padding: 7px 8px; font-size: 12px; }.explore-search { margin-inline: 20px; }.filter-row { padding-inline: 20px; }.hub-sheet { margin-inline: 16px; padding-inline: 20px; }.hub-sheet h2 { font-size: 23px; }.hub-stats strong { font-size: 13px; }.hub-stats small { font-size: 10px; } }
