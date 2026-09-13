@@ -4058,6 +4058,11 @@ body {
   background: #10b981;
 }
 .home-registration-card .primary-requested:hover { background: #059669; }
+.charging-otp-status { display: flex; align-items: center; gap: 10px; margin: 14px 16px 0; padding: 12px 14px; border: 1px solid #bbf7d0; border-radius: 13px; color: #047857; background: #ecfdf5; }
+.charging-otp-status > span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; background: #10b981; font-size: 14px; font-weight: 900; }
+.charging-otp-status strong, .charging-otp-status small { display: block; }
+.charging-otp-status strong { font-size: 11px; }
+.charging-otp-status small { margin-top: 3px; color: #166534; font-size: 10px; }
 .home-registration-error {
   margin: 12px 0 0;
   color: #b42318;

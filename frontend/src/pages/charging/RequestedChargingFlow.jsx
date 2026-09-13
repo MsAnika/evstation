@@ -165,7 +165,7 @@ export default function RequestedChargingFlow() {
         />
       )}
       {stage === "charging" && (
-        <ChargingScreen host={selected} session={session} onFinish={finish} />
+        <ChargingScreen host={selected} pin={pin} session={session} onFinish={finish} />
       )}
       {stage === "payment" && (
         <PaymentScreen
@@ -873,7 +873,7 @@ function HandshakeScreen({ host, pin, onGenerate }) {
     </main>
   );
 }
-function ChargingScreen({ host, session, onFinish }) {
+function ChargingScreen({ host, pin, session, onFinish }) {
   const time = new Date(session.seconds * 1000).toISOString().slice(14, 19);
   return (
     <main className="requested-screen requested-stage">
@@ -912,6 +912,13 @@ function ChargingScreen({ host, session, onFinish }) {
           Finish Charging & Continue to Payment
         </button>
       </section>
+      <div className="charging-otp-status" role="status">
+        <span>✓</span>
+        <div>
+          <strong>OTP generated for charging</strong>
+          <small>House OTP: {pin}</small>
+        </div>
+      </div>
     </main>
   );
 }
