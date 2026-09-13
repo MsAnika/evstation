@@ -3996,6 +3996,8 @@ body {
 .home-registration-screen {
   background: #eef6f4;
 }
+.home-registration-screen > .requested-header { color: #123f42; background: #fff; border-bottom: 1px solid #dceae7; }
+.home-registration-screen > .requested-header h1 { display: none !important; }
 .home-registration-card {
   margin: 18px 16px;
   padding: 20px 17px;
