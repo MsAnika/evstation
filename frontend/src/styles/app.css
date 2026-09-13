@@ -4055,8 +4055,9 @@ body {
   width: 100%;
   margin-top: 20px;
   color: #fff;
-  background: #123f42;
+  background: #10b981;
 }
+.home-registration-card .primary-requested:hover { background: #059669; }
 .home-registration-error {
   margin: 12px 0 0;
   color: #b42318;
