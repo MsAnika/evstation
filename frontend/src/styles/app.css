@@ -5981,6 +5981,7 @@ body {
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 .login-glow {
+  display: none !important;
   position: absolute;
   width: 230px;
   height: 230px;
