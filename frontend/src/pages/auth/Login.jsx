@@ -18,7 +18,7 @@ function Login({ onComplete, onSignup }) {
   }
 
   return <main className="login-page">
-    <header className="login-header"><button className="login-icon-button" aria-label="Go back" onClick={onSignup} type="button">←</button><div className="login-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div><button className="login-icon-button" aria-label="Customer support" type="button">?</button></header>
+    <header className="login-header"><button className="login-icon-button" aria-label="Go back" onClick={onSignup} type="button">←</button><div className="login-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div></header>
     <div className="login-content">
       <div className="login-intro"><h1>Login</h1><p>Welcome back. Charge smarter with clean energy.</p></div>
       <div className="login-role-switch" role="tablist" aria-label="Account type"><button className={isPersonal ? 'active' : ''} onClick={() => setRole('personal')} role="tab" aria-selected={isPersonal} type="button"><span className="role-logo personal-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16.5h14M6.5 16.5l1.2-5.5h9.6l1.2 5.5M8.2 11l1.2-3h5.2l1.2 3M7.5 19v-2.5M16.5 19v-2.5M7 14h.01M17 14h.01" /></svg></span><span>Personal EV</span></button><button className={!isPersonal ? 'active commercial' : ''} onClick={() => setRole('fleet')} role="tab" aria-selected={!isPersonal} type="button"><span className="role-logo fleet-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h3l3 3v4h-6zM6.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17.5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" /></svg></span><span>Commercial Fleet</span></button></div>
