@@ -127,8 +127,8 @@ export default function RequestedChargingFlow() {
       const button = event.target.closest(".charging-drawer-links button");
       if (!button) return;
       if (button.matches(":nth-child(1)")) setStage("dashboard");
-      if (button.matches(":nth-child(2)")) setStage("history");
-      if (button.matches(":nth-child(3)")) setStage("history");
+      if (button.matches(":nth-child(2)")) setStage("invoice");
+      if (button.matches(":nth-child(3)")) setStage("trips");
     };
     document.addEventListener("click", handleDrawerNavigation);
     return () => document.removeEventListener("click", handleDrawerNavigation);
@@ -177,11 +177,14 @@ export default function RequestedChargingFlow() {
           history={history}
           feedback={feedback}
           setFeedback={setFeedback}
-          onPay={() => setStage("history")}
+          onPay={() => setStage("invoice")}
         />
       )}
-      {stage === "history" && (
-        <HistoryScreen history={history} onHome={() => setStage("dashboard")} />
+      {stage === "invoice" && (
+        <InvoiceScreen history={history} />
+      )}
+      {stage === "trips" && (
+        <TripsHistoryScreen history={history} />
       )}
       {matchOpen && (
         <MatchModal
@@ -1056,12 +1059,12 @@ function PaymentScreen({ host, total, payment, setPayment, onPay }) {
     </main>
   );
 }
-function HistoryScreen({ history }) {
+function InvoiceScreen({ history }) {
   return (
     <main className="requested-screen requested-stage history-reference-screen">
       <Header
-        title="Trips & Charge History"
-        subtitle="Invoices and completed house sessions"
+        title="Payment History"
+        subtitle="Invoices and completed payments"
       />
       <section className="history-list">
         {history.length === 0 ? (
@@ -1097,6 +1100,34 @@ function HistoryScreen({ history }) {
             >
               Download
             </button>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+function TripsHistoryScreen({ history }) {
+  return (
+    <main className="requested-screen requested-stage trips-history-screen">
+      <Header title="Trips" subtitle="Where you charged and session details" />
+      <section className="trips-history-list">
+        {history.length === 0 ? (
+          <div className="history-empty">
+            <span>◷</span>
+            <h2>No trips yet</h2>
+            <p>Completed charging sessions will appear here with the host, energy, duration, and cost.</p>
+          </div>
+        ) : history.map((receipt) => (
+          <article key={receipt.id}>
+            <div className="trips-history-head">
+              <div><small>CHARGING LOCATION</small><h2>{receipt.host}</h2></div>
+              <strong>₹{receipt.total.toFixed(2)}</strong>
+            </div>
+            <div className="trips-history-details">
+              <span><small>DATE</small><b>{receipt.date}</b></span>
+              <span><small>ENERGY</small><b>{receipt.kwh.toFixed(2)} kWh</b></span>
+              <span><small>REFERENCE</small><b>{receipt.id}</b></span>
+            </div>
           </article>
         ))}
       </section>
