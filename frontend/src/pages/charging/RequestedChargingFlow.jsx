@@ -1064,7 +1064,13 @@ function HistoryScreen({ history }) {
         subtitle="Invoices and completed house sessions"
       />
       <section className="history-list">
-        {history.map((receipt) => (
+        {history.length === 0 ? (
+          <div className="history-empty">
+            <span>◷</span>
+            <h2>No charge history yet</h2>
+            <p>Completed charging sessions will appear here with the host, energy, date, and total cost.</p>
+          </div>
+        ) : history.map((receipt) => (
           <article key={receipt.id}>
             <span>✓</span>
             <div>

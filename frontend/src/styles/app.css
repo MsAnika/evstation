@@ -4063,6 +4063,10 @@ body {
 .charging-otp-status strong, .charging-otp-status small { display: block; }
 .charging-otp-status strong { font-size: 11px; }
 .charging-otp-status small { margin-top: 3px; color: #166534; font-size: 10px; }
+.history-empty { padding: 30px 12px; text-align: center; }
+.history-empty > span { display: grid; place-items: center; width: 42px; height: 42px; margin: 0 auto 10px; border-radius: 50%; color: #047857; background: #d1fae5; font-size: 20px; }
+.history-empty h2 { margin: 0 0 6px; color: #123f42; font-size: 18px; }
+.history-empty p { margin: 0 auto; max-width: 260px; color: #759193; font-size: 11px; line-height: 1.5; }
 .home-registration-error {
   margin: 12px 0 0;
   color: #b42318;
