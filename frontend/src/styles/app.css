@@ -6006,6 +6006,7 @@ body {
   z-index: 1;
 }
 .login-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6031,10 +6032,15 @@ body {
   background: #eaedff;
 }
 .login-brand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: flex;
   align-items: center;
   gap: 8px;
+  transform: translate(-50%, -50%);
 }
+.login-brand img { display: block; width: min(150px, 38vw); height: auto; max-height: 38px; object-fit: contain; }
 .login-brand > span {
   display: grid;
   place-items: center;
