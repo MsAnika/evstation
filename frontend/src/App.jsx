@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { divIcon } from 'leaflet'
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import './App.css'
-import './reference-theme.css'
-import './dashboard-reference.css'
-import Discovery from './Discovery'
-import RequestedChargingFlow from './RequestedChargingFlow'
+import RequestedChargingFlow from './pages/charging/RequestedChargingFlow'
+import Signup from './pages/auth/Signup'
+import Login from './pages/auth/Login'
+import Registration from './pages/auth/Registration'
+import FleetRegistration from './pages/auth/FleetRegistration'
+import Verification from './pages/auth/Verification'
 
 const API = 'http://localhost:8000'
 const fallbackHosts = [
@@ -20,10 +20,16 @@ const fallbackHosts = [
   { id: 'HM-08', name: 'Faridabad Green Node', area: 'Faridabad', distance: 16.7, capacity: 18, available: true, lat: 28.4089, lng: 77.3178, state: 'Delhi' },
 ]
 const emptyMetrics = { delivered: 0, voltage: 0, tariff: 0, total: 0, savings: 0, hostPayout: 0 }
+const pageRoutes = { login: '/login', signup: '/signup', registration: '/register', 'fleet-registration': '/fleet-register', verification: '/verify', journey: '/match', nodes: '/nodes', settlement: '/wallet', mobile: '/charging' }
+const routePages = Object.fromEntries(Object.entries(pageRoutes).map(([page, route]) => [route, page]))
+
+function pageForPath(pathname) { return routePages[pathname] || 'login' }
 
 function App() {
   void Dashboard
-  const [page, setPage] = useState('mobile')
+  const [page, setPageState] = useState(() => pageForPath(window.location.pathname))
+  const [verificationBackPage, setVerificationBackPage] = useState('registration')
+  const [verificationPhone, setVerificationPhone] = useState('')
   const [hosts, setHosts] = useState(fallbackHosts)
   const [matches, setMatches] = useState([])
   const [selectedId, setSelectedId] = useState(null)
@@ -34,15 +40,34 @@ function App() {
   const [running, setRunning] = useState(false)
   const consoleRef = useRef(null)
 
+  function navigate(nextPage, replace = false) {
+    const route = pageRoutes[nextPage] || pageRoutes.login
+    window.history[replace ? 'replaceState' : 'pushState']({}, '', route)
+    setPageState(nextPage)
+  }
+  const setPage = (nextPage) => navigate(nextPage === 'dashboard' ? 'mobile' : nextPage)
+
+  useEffect(() => {
+    if (window.location.pathname === '/') window.history.replaceState({}, '', pageRoutes.login)
+    const handlePopState = () => setPageState(pageForPath(window.location.pathname))
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
   useEffect(() => { fetch(`${API}/api/hosts`).then((response) => response.json()).then(setHosts).catch(() => {}) }, [])
   useEffect(() => { if (consoleRef.current) consoleRef.current.scrollTop = consoleRef.current.scrollHeight }, [events])
 
+  if (page === 'login') return <Login onComplete={({ method, mobile }) => { if (method === 'mobile') { setVerificationPhone(mobile); setVerificationBackPage('login'); navigate('verification') } else navigate('mobile') }} onSignup={() => navigate('signup')} />
+  if (page === 'signup') return <Signup onComplete={(role) => navigate(role === 'personal' ? 'registration' : 'fleet-registration')} onLogin={() => navigate('login')} />
+  if (page === 'registration') return <Registration onBack={() => navigate('signup')} onComplete={(phone) => { setVerificationPhone(phone); setVerificationBackPage('registration'); navigate('verification') }} />
+  if (page === 'fleet-registration') return <FleetRegistration onBack={() => navigate('signup')} onComplete={(phone) => { setVerificationPhone(phone); setVerificationBackPage('fleet-registration'); navigate('verification') }} />
+  if (page === 'verification') return <Verification phone={verificationPhone} onBack={() => navigate(verificationBackPage)} onComplete={() => navigate('mobile')} />
   if (page === 'mobile') return <RequestedChargingFlow />
 
   const selectedHost = hosts.find((host) => host.id === selectedId)
 
   async function runMatchmaker() {
-    setPage('journey'); setPreparation(null); setSelectedId(null); setPhase('matching'); setMetrics(emptyMetrics); setEvents([])
+    navigate('journey'); setPreparation(null); setSelectedId(null); setPhase('matching'); setMetrics(emptyMetrics); setEvents([])
     try {
       const response = await fetch(`${API}/api/matches`); const options = await response.json()
       setMatches(options); setPhase('matches'); addEvent({ agent: 'MATCHMAKER', title: 'Top two hosts found', message: 'Choose one destination before policy evaluation begins.', status: 'complete' })
@@ -80,10 +105,10 @@ function App() {
   async function runSettlement() {
     setPhase('settling'); setRunning(true)
     const response = await fetch(`${API}/api/settle`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host_id: selectedId }) }); const result = await response.json()
-    setMetrics((current) => ({ ...current, total: result.driver_total, savings: result.savings, hostPayout: result.host_payout })); addEvent({ agent: 'SETTLEMENT', title: 'Split payment prepared', message: `Rs ${result.driver_total.toFixed(2)} split between host and platform.`, status: 'settled' }); setPhase('settled'); setRunning(false); setPage('settlement')
+    setMetrics((current) => ({ ...current, total: result.driver_total, savings: result.savings, hostPayout: result.host_payout })); addEvent({ agent: 'SETTLEMENT', title: 'Split payment prepared', message: `Rs ${result.driver_total.toFixed(2)} split between host and platform.`, status: 'settled' }); setPhase('settled'); setRunning(false); navigate('settlement')
   }
 
-  return <main className="app-shell"><header className="topbar"><button className="brand-mark" onClick={() => setPage('dashboard')}>⚡</button><div><p className="eyebrow">CLEAN ENERGY NETWORK</p><h1>VoltPulse Clean EV <span>/ Delhi-NCR</span></h1></div><div className="system-state"><i /> <b>82%</b> · 280 km</div></header><nav className="main-nav"><button className={page === 'dashboard' ? 'active' : ''} onClick={() => setPage('dashboard')}><span>⌂</span>Explore</button><button className={page === 'journey' ? 'active' : ''} onClick={() => setPage('journey')}><span>↝</span>Match</button><button className={page === 'nodes' ? 'active' : ''} onClick={() => setPage('nodes')}><span>ϟ</span>Session</button><button className={page === 'settlement' ? 'active' : ''} onClick={() => setPage('settlement')}><span>▣</span>Wallet</button></nav>{page === 'dashboard' && <Discovery onRouteCharge={runMatchmaker} />}{page === 'nodes' && <Nodes hosts={hosts} selectedId={selectedId} setSelectedId={setSelectedId} running={running} />}{page === 'journey' && <Journey phase={phase} matches={matches} selectedHost={selectedHost} preparation={preparation} events={events} metrics={metrics} running={running} consoleRef={consoleRef} runMatchmaker={runMatchmaker} chooseHost={chooseHost} checkPolicy={checkPolicy} lockTariff={lockTariff} approveAgents={approveAgents} startJourney={startJourney} startCharging={startCharging} runSettlement={runSettlement} />}{page === 'settlement' && <Settlement metrics={metrics} settled={phase === 'settled'} />}<footer><span>SESSION / GM-2026-0911</span><span>STAGED LOCAL JOURNEY / NO API KEY</span><span>DELHI-NCR PILOT / v0.1</span></footer></main>
+  return <main className="app-shell"><header className="topbar"><button className="brand-mark" onClick={() => setPage('dashboard')}>⚡</button><div><p className="eyebrow">CLEAN ENERGY NETWORK</p><h1>VoltPulse Clean EV <span>/ Delhi-NCR</span></h1></div><div className="system-state"><i /> <b>82%</b> · 280 km</div></header><nav className="main-nav"><button className={page === 'dashboard' ? 'active' : ''} onClick={() => setPage('dashboard')}><span>⌂</span>Explore</button><button className={page === 'journey' ? 'active' : ''} onClick={() => setPage('journey')}><span>↝</span>Match</button><button className={page === 'nodes' ? 'active' : ''} onClick={() => setPage('nodes')}><span>ϟ</span>Session</button><button className={page === 'settlement' ? 'active' : ''} onClick={() => setPage('settlement')}><span>▣</span>Wallet</button></nav>{page === 'nodes' && <Nodes hosts={hosts} selectedId={selectedId} setSelectedId={setSelectedId} running={running} />}{page === 'journey' && <Journey phase={phase} matches={matches} selectedHost={selectedHost} preparation={preparation} events={events} metrics={metrics} running={running} consoleRef={consoleRef} runMatchmaker={runMatchmaker} chooseHost={chooseHost} checkPolicy={checkPolicy} lockTariff={lockTariff} approveAgents={approveAgents} startJourney={startJourney} startCharging={startCharging} runSettlement={runSettlement} />}{page === 'settlement' && <Settlement metrics={metrics} settled={phase === 'settled'} />}<footer><span>SESSION / GM-2026-0911</span><span>STAGED LOCAL JOURNEY / NO API KEY</span><span>DELHI-NCR PILOT / v0.1</span></footer></main>
 }
 
 function Dashboard({ runMatchmaker, hosts }) { return <section className="page-section explore-screen"><div className="explore-search">⌕ <span>Search charging hubs, metro corridors, or areas</span><b>☷</b></div><div className="filter-row"><button className="filter-active">ϟ Fast DC (&gt;50kW)</button><button>☼ Solar Powered</button><button>⚡ Instant Bay</button></div><div className="explore-map"><MapCanvas hosts={hosts} selectedId={null} setSelectedId={() => {}} running={false} /></div><div className="hub-sheet"><div className="hub-top"><span className="hub-pill">● Ultra-Fast DC Hub</span><span>· 1.2 km away</span><b>☆ 4.9 (142)</b></div><h2>CyberCity GreenHub CCS2 &amp; Type-2</h2><p>⌖ Sector 43 Tech Corridor, Cyber Gateway</p><div className="hub-stats"><span><small>CLEAN ENERGY</small><strong>♧ 94% Solar</strong></span><span><small>BASE TARIFF</small><strong>Rs 14.50/kWh</strong></span><span><small>AVAILABILITY</small><strong>● 4 / 6 Free</strong></span></div><button className="primary-action" onClick={runMatchmaker}>Route &amp; Charge <b>{'->'}</b></button></div></section> }
