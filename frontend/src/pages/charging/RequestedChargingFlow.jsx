@@ -128,6 +128,7 @@ export default function RequestedChargingFlow() {
       if (!button) return;
       if (button.matches(":nth-child(1)")) setStage("dashboard");
       if (button.matches(":nth-child(2)")) setStage("history");
+      if (button.matches(":nth-child(5)")) setStage("history");
     };
     document.addEventListener("click", handleDrawerNavigation);
     return () => document.removeEventListener("click", handleDrawerNavigation);
@@ -1059,7 +1060,7 @@ function HistoryScreen({ history }) {
   return (
     <main className="requested-screen requested-stage history-reference-screen">
       <Header
-        title="Payment & History"
+        title="Trips & Charge History"
         subtitle="Invoices and completed house sessions"
       />
       <section className="history-list">
