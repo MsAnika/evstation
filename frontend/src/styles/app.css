@@ -3522,6 +3522,7 @@ body {
 /* ===== charging-top.css ===== */
 .charging-topbar::before {
   content: none;
+  display: none !important;
   position: absolute;
   top: 0;
   left: 50%;
