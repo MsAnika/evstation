@@ -61,7 +61,16 @@ const markerIcon = (symbol, kind) =>
     className: "requested-marker-icon",
     html: `<span class="requested-marker ${kind}">${symbol}</span>`,
   });
-const blankSession = { seconds: 0, kwh: 0 };
+const API = "http://localhost:8000";
+const blankSession = {
+  seconds: 0,
+  kwh: 0,
+  voltage: 0,
+  current: 0,
+  power: 0,
+  cost: 0,
+  status: "idle",
+};
 void JourneyScreen;
 void BottomNav;
 
@@ -71,10 +80,13 @@ export default function RequestedChargingFlow({ onLogout }) {
   const [matchOpen, setMatchOpen] = useState(false);
   const [permission, setPermission] = useState("idle");
   const [pin, setPin] = useState("");
+  const [hardwareArmed, setHardwareArmed] = useState(false);
+  const [hardwareStartedAt, setHardwareStartedAt] = useState(null);
   const [session, setSession] = useState(blankSession);
   const [payment, setPayment] = useState("Google Pay");
   const [feedback, setFeedback] = useState("");
   const [history, setHistory] = useState([]);
+  const [stopping, setStopping] = useState(false);
 
   const chooseHome = (home) => {
     setSelected(home);
@@ -86,18 +98,38 @@ export default function RequestedChargingFlow({ onLogout }) {
       window.setTimeout(() => setStage("handshake"), 700);
     }, 10000);
   };
-  const generatePin = () => {
+  const generatePin = async () => {
     if (!pin) {
       const randomValues = new Uint32Array(1);
       window.crypto.getRandomValues(randomValues);
-      setPin(String(1000 + (randomValues[0] % 9000)));
+      const nextPin = String(1000 + (randomValues[0] % 9000));
+      try {
+        const response = await fetch(`${API}/api/hardware/arm`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ host_id: selected.id, otp: nextPin }),
+        });
+        const hardware = await response.json();
+        if (hardware.status !== "waiting_for_button") throw new Error("Hardware did not arm");
+        setPin(nextPin);
+        setHardwareArmed(true);
+        setHardwareStartedAt(null);
+      } catch {
+        setPin("");
+        setHardwareArmed(false);
+        setHardwareStartedAt(null);
+      }
       return;
     }
-    setStage("charging");
-    setSession(blankSession);
   };
   const total = +(session.kwh * selected.tariff).toFixed(2);
-  const finish = () => {
+  const finish = async () => {
+    setStopping(true);
+    try {
+      await fetch(`${API}/api/hardware/stop`, { method: "POST" });
+    } finally {
+      setStopping(false);
+    }
     const receipt = {
       id: `VP-${Date.now().toString().slice(-6)}`,
       host: selected.name,
@@ -110,17 +142,32 @@ export default function RequestedChargingFlow({ onLogout }) {
   };
 
   useEffect(() => {
-    if (stage !== "charging") return undefined;
-    const timer = setInterval(
-      () =>
-        setSession((current) => ({
-          seconds: current.seconds + 1,
-          kwh: +(current.kwh + 0.12).toFixed(2),
-        })),
-      1000,
-    );
-    return () => clearInterval(timer);
-  }, [stage]);
+    if (!(stage === "handshake" || stage === "charging") || !pin || !hardwareArmed) return undefined;
+    const poll = window.setInterval(async () => {
+      try {
+        const response = await fetch(`${API}/api/hardware/state`);
+        const hardware = await response.json();
+        if (hardware.host_id !== selected.id) return;
+        if (hardware.status === "charging" || hardware.status === "complete") {
+          if (!hardware.started_at) return;
+          if (!hardwareStartedAt) setHardwareStartedAt(hardware.started_at);
+          setSession({
+            seconds: hardware.elapsed_seconds,
+            kwh: hardware.delivered,
+            voltage: hardware.voltage,
+            current: hardware.current,
+            power: hardware.power,
+            cost: hardware.cost,
+            status: hardware.status,
+          });
+          if (stage === "handshake" && hardware.started_at) setStage("charging");
+        }
+      } catch {
+        // Keep the waiting screen visible while the hardware bridge is offline.
+      }
+    }, 500);
+    return () => window.clearInterval(poll);
+  }, [hardwareArmed, hardwareStartedAt, pin, selected.id, stage]);
 
   useEffect(() => {
     const handleDrawerNavigation = (event) => {
@@ -167,7 +214,7 @@ export default function RequestedChargingFlow({ onLogout }) {
         />
       )}
       {stage === "charging" && (
-        <ChargingScreen host={selected} pin={pin} session={session} onFinish={finish} />
+        <ChargingScreen host={selected} pin={pin} session={session} onFinish={finish} stopping={stopping} />
       )}
       {stage === "payment" && (
         <PaymentScreen
@@ -871,14 +918,15 @@ function HandshakeScreen({ host, pin, onGenerate }) {
         ) : (
           <div className="pin-placeholder">----</div>
         )}
-        <button className="primary-requested" onClick={onGenerate}>
-          {pin ? "Start Charging" : "Generate OTP for Current Charge"}
+        <button className="primary-requested" disabled={Boolean(pin)} onClick={onGenerate}>
+          {pin ? "Waiting for Hardware Button" : "Generate OTP for Current Charge"}
         </button>
+        {pin && <p role="status">Enter the OTP on the hardware, then press its button to start charging.</p>}
       </section>
     </main>
   );
 }
-function ChargingScreen({ host, pin, session, onFinish }) {
+function ChargingScreen({ host, pin, session, onFinish, stopping }) {
   const time = new Date(session.seconds * 1000).toISOString().slice(14, 19);
   return (
     <main className="requested-screen requested-stage">
@@ -888,17 +936,22 @@ function ChargingScreen({ host, pin, session, onFinish }) {
         <strong>
           {session.kwh.toFixed(2)} <i>kWh</i>
         </strong>
-        <p>Live incremental meter · {time}</p>
+        <p>
+          Hardware meter · {time} · {session.status === "complete" ? "Complete" : "Charging"}
+        </p>
       </section>
       <div className="charging-metrics">
         <span>
-          Live cost<strong>₹{(session.kwh * host.tariff).toFixed(2)}</strong>
+          Live cost
+          <strong>
+            ₹{(session.cost > 0 ? session.cost : session.kwh * host.tariff).toFixed(2)}
+          </strong>
         </span>
         <span>
           Tariff<strong>₹{host.tariff}/kWh</strong>
         </span>
         <span>
-          Power<strong>{host.power} kW</strong>
+          Power<strong>{session.power.toFixed(2)} kW</strong>
         </span>
       </div>
       <section className="charging-card">
@@ -910,11 +963,11 @@ function ChargingScreen({ host, pin, session, onFinish }) {
           <i style={{ width: `${Math.min(100, session.kwh * 3)}%` }} />
         </div>
         <p>
-          Charging is running automatically. Complete when your vehicle is
-          ready.
+          {session.voltage.toFixed(0)} V · {session.current.toFixed(2)} A from
+          the Wokwi meter. Complete when your vehicle is ready.
         </p>
-        <button className="primary-requested" onClick={onFinish}>
-          Finish Charging & Continue to Payment
+        <button className="primary-requested" disabled={stopping} onClick={onFinish}>
+          {stopping ? "Stopping Hardware..." : "Finish Charging & Continue to Payment"}
         </button>
       </section>
       <div className="charging-otp-status" role="status">

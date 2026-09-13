@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from hardware import arm, press_button, record_reading, state, stop_charging
 from workflow import HOSTS, get_matches, prepare_session, run_charging, run_dispatch, run_route, settle_session
 
 app = FastAPI(title="GridMitra Local Mesh")
@@ -11,6 +12,21 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allo
 
 class DispatchRequest(BaseModel):
     host_id: str | None = None
+
+
+class HardwareArmRequest(BaseModel):
+    host_id: str
+    otp: str
+
+
+class HardwareReadingRequest(BaseModel):
+    delivered: float
+    voltage: float
+    current: float
+    power: float
+    cost: float | None = None
+    elapsed_seconds: int
+    complete: bool = False
 
 
 class TripRecord(BaseModel):
@@ -29,6 +45,31 @@ trip_history: list[dict] = []
 @app.get("/api/health")
 async def health() -> dict:
     return {"status": "online", "mode": "local-deterministic"}
+
+
+@app.get("/api/hardware/state")
+async def hardware() -> dict:
+    return state()
+
+
+@app.post("/api/hardware/arm")
+async def arm_hardware(request: HardwareArmRequest) -> dict:
+    return arm(request.host_id, request.otp)
+
+
+@app.post("/api/hardware/button")
+async def hardware_button() -> dict:
+    return press_button()
+
+
+@app.post("/api/hardware/stop")
+async def hardware_stop() -> dict:
+    return stop_charging()
+
+
+@app.post("/api/hardware/reading")
+async def hardware_reading(request: HardwareReadingRequest) -> dict:
+    return record_reading(**request.model_dump())
 
 
 @app.get("/api/hosts")
