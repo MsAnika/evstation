@@ -128,7 +128,7 @@ export default function RequestedChargingFlow() {
       if (!button) return;
       if (button.matches(":nth-child(1)")) setStage("dashboard");
       if (button.matches(":nth-child(2)")) setStage("history");
-      if (button.matches(":nth-child(5)")) setStage("history");
+      if (button.matches(":nth-child(3)")) setStage("history");
     };
     document.addEventListener("click", handleDrawerNavigation);
     return () => document.removeEventListener("click", handleDrawerNavigation);
