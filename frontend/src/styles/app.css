@@ -3521,7 +3521,7 @@ body {
 
 /* ===== charging-top.css ===== */
 .charging-topbar::before {
-  content: "\03DF ChargeKaro";
+  content: none;
   position: absolute;
   top: 0;
   left: 50%;
