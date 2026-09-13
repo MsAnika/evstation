@@ -87,7 +87,12 @@ export default function RequestedChargingFlow() {
     }, 10000);
   };
   const generatePin = () => {
-    setPin(String(Math.floor(1000 + Math.random() * 9000)));
+    if (!pin) {
+      const randomValues = new Uint32Array(1);
+      window.crypto.getRandomValues(randomValues);
+      setPin(String(1000 + (randomValues[0] % 9000)));
+      return;
+    }
     setStage("charging");
     setSession(blankSession);
   };
