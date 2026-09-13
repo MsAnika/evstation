@@ -6367,6 +6367,7 @@ body {
 .approval-topbar .charging-notification, .booking-topbar .charging-notification { position: absolute; top: 50%; right: 18px; display: grid; place-items: center; width: 42px; height: 42px; min-width: 42px; padding: 0; border: 1px solid #b9c8c8; border-radius: 50%; color: transparent; background: #fff; font-size: 0; transform: translateY(-50%); }
 .approval-topbar .charging-notification::before, .booking-topbar .charging-notification::before { content: '\1F514' !important; position: absolute; top: 50%; left: 50%; display: block; color: #000; font-size: 17px; line-height: 1; filter: grayscale(1) brightness(.2); transform: translate(-50%, -50%); }
 .charging-brand-logo { position: absolute; top: 0; left: 50%; display: block; width: min(220px, 48vw); height: 50px; object-fit: contain; transform: translateX(-50%); pointer-events: none; }
+.charging-brand-logo { height: auto; max-height: 56px; }
 .signup-brand-mark {
   display: grid;
   place-items: center;
