@@ -18,7 +18,6 @@ function Login({ onComplete, onSignup }) {
   }
 
   return <main className="login-page">
-    <div className="login-glow login-glow-one" /><div className="login-glow login-glow-two" />
     <header className="login-header"><button className="login-icon-button" aria-label="Go back" onClick={onSignup} type="button">←</button><div className="login-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div><button className="login-icon-button" aria-label="Customer support" type="button">?</button></header>
     <div className="login-content">
       <div className="login-intro"><h1>Login</h1><p>Welcome back. Charge smarter with clean energy.</p></div>

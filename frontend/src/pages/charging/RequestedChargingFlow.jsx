@@ -65,7 +65,7 @@ const blankSession = { seconds: 0, kwh: 0 };
 void JourneyScreen;
 void BottomNav;
 
-export default function RequestedChargingFlow() {
+export default function RequestedChargingFlow({ onLogout }) {
   const [stage, setStage] = useState("dashboard");
   const [selected, setSelected] = useState(homes[0]);
   const [matchOpen, setMatchOpen] = useState(false);
@@ -129,10 +129,11 @@ export default function RequestedChargingFlow() {
       if (button.matches(":nth-child(1)")) setStage("dashboard");
       if (button.matches(":nth-child(2)")) setStage("invoice");
       if (button.matches(":nth-child(3)")) setStage("trips");
+      if (button.matches(":nth-child(5)")) onLogout?.();
     };
     document.addEventListener("click", handleDrawerNavigation);
     return () => document.removeEventListener("click", handleDrawerNavigation);
-  }, []);
+  }, [onLogout]);
 
   return (
     <div className="requested-flow">

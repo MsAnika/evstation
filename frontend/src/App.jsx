@@ -246,7 +246,7 @@ function App() {
         onComplete={() => navigate("mobile")}
       />
     );
-  if (page === "mobile") return <RequestedChargingFlow />;
+  if (page === "mobile") return <RequestedChargingFlow onLogout={() => navigate("login")} />;
 
   const selectedHost = hosts.find((host) => host.id === selectedId);
 
