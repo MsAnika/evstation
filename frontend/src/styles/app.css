@@ -4068,6 +4068,7 @@ body {
 .history-empty h2 { margin: 0 0 6px; color: #123f42; font-size: 18px; }
 .history-empty p { margin: 0 auto; max-width: 260px; color: #759193; font-size: 11px; line-height: 1.5; }
 .trips-history-list { display: grid; gap: 12px; margin: 18px 16px; }
+.trips-history-screen > .requested-header { color: #123f42; background: #fff; border-bottom: 1px solid #dceae7; }
 .trips-history-list article { padding: 16px; border: 1px solid #dceae7; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(18,63,66,.06); }
 .trips-history-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .trips-history-head small, .trips-history-details small { color: #759193; font-size: 9px; font-weight: 900; letter-spacing: .7px; }
