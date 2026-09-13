@@ -13,6 +13,19 @@ class DispatchRequest(BaseModel):
     host_id: str | None = None
 
 
+class TripRecord(BaseModel):
+    host: str
+    owner: str
+    kwh: float
+    total: float
+    started_at: str
+    finished_at: str
+    duration_seconds: int
+
+
+trip_history: list[dict] = []
+
+
 @app.get("/api/health")
 async def health() -> dict:
     return {"status": "online", "mode": "local-deterministic"}
@@ -26,6 +39,18 @@ async def hosts() -> list[dict]:
 @app.get("/api/matches")
 async def matches() -> list[dict]:
     return get_matches()
+
+
+@app.get("/api/trips")
+async def trips() -> list[dict]:
+    return trip_history
+
+
+@app.post("/api/trips")
+async def create_trip(record: TripRecord) -> dict:
+    trip = {"id": f"VP-{len(trip_history) + 1:04d}", **record.model_dump()}
+    trip_history.insert(0, trip)
+    return trip
 
 
 @app.post("/api/prepare")

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import chargeKaroLogo from "../../assets/chargekaro_logo_transparent.png";
 
 function Signup({ onComplete, onLogin }) {
   const [role, setRole] = useState("personal");
@@ -22,10 +23,7 @@ function Signup({ onComplete, onLogin }) {
           <span aria-hidden="true">←</span>
         </button>
         <div className="signup-brand">
-          <span className="signup-brand-mark" aria-hidden="true">
-            ϟ
-          </span>
-          <span>ChargeKaro</span>
+          <img alt="ChargeKaro" src={chargeKaroLogo} />
         </div>
         <button
           className="signup-icon-button"

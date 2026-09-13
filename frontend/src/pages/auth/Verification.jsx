@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import chargeKaroLogo from '../../assets/chargekaro_logo_transparent.png'
 
 function Verification({ phone, onBack, onComplete }) {
   const [digits, setDigits] = useState(['', '', '', ''])
@@ -34,7 +35,7 @@ function Verification({ phone, onBack, onComplete }) {
     <div className="verification-glow" />
     <div className="verification-device">
       <div className="verification-status-bar"><strong>09:41</strong><span>▮▮▮ ◉ ▰</span></div>
-      <header className="verification-header"><button className="verification-icon-button" aria-label="Back to registration" onClick={onBack} type="button">←</button><div className="verification-brand"><span>ϟ</span> ChargeKaro</div><button className="verification-icon-button" aria-label="Support and help" type="button">?</button></header>
+      <header className="verification-header"><button className="verification-icon-button" aria-label="Back to registration" onClick={onBack} type="button">←</button><div className="verification-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div><button className="verification-icon-button" aria-label="Support and help" type="button">?</button></header>
     </div>
     <div className="verification-progress"><div><span>STEP 2 OF 2: VERIFICATION</span><strong>100%</strong></div><i><b /></i></div>
     <section className="verification-content">

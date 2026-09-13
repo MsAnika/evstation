@@ -7,6 +7,7 @@ import {
   Polyline,
   TileLayer,
 } from "react-leaflet";
+import chargeKaroLogo from "../../assets/chargekaro_logo_transparent.png";
 
 const homes = [
   {
@@ -192,9 +193,8 @@ function Header({ title, subtitle, action }) {
     <header className="requested-header">
       <ChargingMenuButton />
       <div>
-        <small>VOLT PULSE · RESIDENTIAL GRID</small>
+        <img className="requested-brand-logo" alt="ChargeKaro" src={chargeKaroLogo} />
         <h1>{title}</h1>
-        {subtitle && <p>{subtitle}</p>}
       </div>
       {action || <span className="header-live">LIVE</span>}
     </header>
@@ -296,11 +296,8 @@ function ApprovalScreen({ host, permission }) {
     <main className="approval-screen">
       <header className="approval-topbar">
         <ChargingMenuButton />
-        <div>
-          <small>CHARGING REQUEST</small>
-          <strong>Home Charger</strong>
-        </div>
-        <span>LIVE</span>
+        <img className="approval-brand-logo" alt="ChargeKaro" src={chargeKaroLogo} />
+        <button className="charging-notification" aria-label="Notifications" type="button">🔔</button>
       </header>
       <section className="approval-status">
         <div className="approval-status-head">
@@ -415,6 +412,7 @@ function ChargingTopBar() {
         >
           ♧
         </button>
+        <img className="charging-brand-logo" alt="ChargeKaro" src={chargeKaroLogo} />
         <div className="charging-route-card">
           <div className="charging-route-dots">
             <i />
@@ -824,11 +822,8 @@ function HandshakeScreen({ host, pin, onGenerate }) {
     <main className="requested-screen requested-stage booking-screen">
       <header className="booking-topbar">
         <ChargingMenuButton />
-        <div>
-          <small>CHARGING REQUEST</small>
-          <h1>House Booking</h1>
-        </div>
-        <span>LIVE</span>
+        <img className="booking-brand-logo" alt="ChargeKaro" src={chargeKaroLogo} />
+        <button className="charging-notification" aria-label="Notifications" type="button">🔔</button>
       </header>
       <section className="booking-card">
         <small>SECOND STAGE · HOUSE HANDSHAKE</small>

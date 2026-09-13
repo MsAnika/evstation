@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import chargeKaroLogo from '../../assets/chargekaro_logo_transparent.png'
 
 function Registration({ onComplete, onBack }) {
   const [passwordVisible, setPasswordVisible] = useState(false)
@@ -20,7 +21,7 @@ function Registration({ onComplete, onBack }) {
     <main className="registration-page">
       <header className="registration-header">
         <button className="registration-icon-button" aria-label="Back to account type" onClick={onBack} type="button"><span aria-hidden="true">←</span></button>
-        <div className="registration-brand">ChargeKaro</div>
+        <div className="registration-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div>
         <button className="registration-icon-button" aria-label="Support and help" type="button"><span aria-hidden="true">?</span></button>
       </header>
 

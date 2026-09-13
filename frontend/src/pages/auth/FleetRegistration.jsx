@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import chargeKaroLogo from '../../assets/chargekaro_logo_transparent.png'
 
 const initialForm = {
   name: '', mobile: '', email: '', license: '',
@@ -25,7 +26,7 @@ function FleetRegistration({ onComplete, onBack }) {
   }
 
   return <main className="fleet-page">
-    <header className="fleet-header"><button className="fleet-icon-button" aria-label="Go back" onClick={onBack} type="button">←</button><div className="fleet-brand"><span>ϟ</span> ChargeKaro</div><button className="fleet-icon-button" aria-label="Support and help" type="button">?</button></header>
+    <header className="fleet-header"><button className="fleet-icon-button" aria-label="Go back" onClick={onBack} type="button">←</button><div className="fleet-brand"><img alt="ChargeKaro" src={chargeKaroLogo} /></div><button className="fleet-icon-button" aria-label="Support and help" type="button">?</button></header>
     <div className="fleet-progress"><div><span>STEP 1 OF 2: DRIVER &amp; VEHICLE ONBOARDING</span><strong>50%</strong></div><i><b /></i></div>
     <section className="fleet-content"><div className="fleet-title"><span>✓ VERIFIED ONBOARDING</span><h1>Commercial Driver Sign Up</h1><p>Set up your fleet profile for smarter charging and direct subsidy settlement.</p></div>
       <form className="fleet-form" onSubmit={submit} noValidate>
