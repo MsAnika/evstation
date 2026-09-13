@@ -1063,8 +1063,8 @@ function InvoiceScreen({ history }) {
   return (
     <main className="requested-screen requested-stage history-reference-screen">
       <Header
-        title="Payment History"
-        subtitle="Invoices and completed payments"
+        title="Invoices & Transactions"
+        subtitle="Download receipts and review completed payments"
       />
       <section className="history-list">
         {history.length === 0 ? (
@@ -1081,6 +1081,7 @@ function InvoiceScreen({ history }) {
               <small>
                 {receipt.date} · {receipt.kwh.toFixed(2)} kWh
               </small>
+              <small>Transaction {receipt.id}</small>
             </div>
             <strong>₹{receipt.total.toFixed(2)}</strong>
             <button
